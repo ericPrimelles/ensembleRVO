@@ -9,6 +9,10 @@ class MADDPG:
         critic_hidden_units : list = [128],
         gamma = 0.99, path='') -> None:
         
+
+        self.n_agents =n_agents
+        self.state_space = state_space
+        self.action_spae = action_space
         self.model : MADDPGmodel = MADDPGmodel(n_agents, state_space, action_space, actor_learning_rate, critic_learning_rate,
             actor_hidden_units, critic_hidden_units)
         self.t_model = clone_model(self.model.model)
@@ -29,8 +33,9 @@ class MADDPG:
         t_q_value = self.t_model(s_1)
         s_f = Flatten()(s)
         a_f = Flatten()(a)
-        target = tf.math.reduce_mean(r, axis=1, keepdims=True) + self.gamma * t_q_value
-        self.model.trainCritic(s_f, a_f, target)
+        for i in range(self.n_agents):
+            target = r[:, i``] + self.gamma * t_q_value
+            self.model.trainCritic(s_f, a_f, target)
         self.model.trainActor(s)
 
         # Needs Update target
