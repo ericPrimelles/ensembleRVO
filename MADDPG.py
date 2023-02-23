@@ -31,12 +31,13 @@ class MADDPG:
         return action + noise
 
     def learn(self, s, r, a, s_1):
+        
         t_q_value = self.t_model(s_1)
         s_f = Flatten()(s)
         a_f = Flatten()(a)
-        for i in range(self.n_agents):
-            target = r[:, i] + self.gamma * t_q_value
-            self.model.trainCritic(s_f, a_f, target)
+        
+        target = tf.math.reduce_mean(r, axis=1) + self.gamma * t_q_value
+        self.model.trainCritic(s_f, a_f, target)
         self.model.trainActor(s)
 
         # Needs Update target
@@ -47,7 +48,11 @@ class MADDPG:
         for a, b in zip(t_weights, weights):
             a.assign(b * self.tau + a * (1 - self.tau))
 
+    def save(self):
+        pass
 
+    def load(self):
+        pass
 if __name__ == '__main__':
     import numpy as np
     m = MADDPG(2, 2, 2)
