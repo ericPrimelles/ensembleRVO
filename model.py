@@ -103,7 +103,12 @@ class MADDPGmodel:
     @tf.function
     def act (self, state):
         
-        return tf.linalg.normalize(self.actor(state), axis=1)[0]
+        actions = self.actor(state)
+        norm_actions = tf.linalg.normalize(actions, axis=1) 
+        if norm_actions[1] > 0:
+            return norm_actions
+        return actions
+
 
     def save (self):
         pass
