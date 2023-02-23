@@ -22,15 +22,15 @@ class ReplayBuffer:
         self.s = np.empty((self.max_length, 1, self.n_agents, self.obs_space))
         self.a = np.empty((self.max_length, 1, self.n_agents, self.act_space))
         self.s_1 = np.empty((self.max_length, 1, self.n_agents, self.obs_space))  
-        self.r = np.empty((self.max_length, 1, self.n_agents, self.n_agents))
-        self.dones = np.empty((self.max_length, 1, self.n_agents, 1))
+        self.r = np.empty((self.max_length, 1, self.n_agents))
+        self.dones = np.empty((self.max_length, 1, self.n_agents))
         
     def reshape(self, s, a, r, s_1, done):
         s = np.reshape(s, (1, self.n_agents, self.obs_space))
         a = np.reshape(a, (1, self.n_agents, self.act_space))
         s_1 = np.reshape(s_1, (1, self.n_agents, self.obs_space))
-        r = np.reshape(r, (1, self.n_agents, self.n_agents))
-        dones = np.reshape(done, (1, self.n_agents, 1))
+        r = np.reshape(r, (1, self.n_agents))
+        dones = np.reshape(done, (1, self.n_agents))
         return s, a, r, s_1, dones
 
     def store(self, s, a, r, s_1, done) -> None:

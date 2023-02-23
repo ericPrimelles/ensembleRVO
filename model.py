@@ -104,14 +104,14 @@ class MADDPGmodel:
     def act (self, state):
         
         actions = self.actor(state)
-        norm_actions = tf.linalg.normalize(actions, axis=1) 
-        if norm_actions[1] > 0:
-            return norm_actions
+        
         return actions
 
 
-    def save (self):
-        pass
+    def save (self, path):
+        for i, actor in enumerate(self.actors_models):
+            actor.save(f'{path}/actor_{i}.h5')
+        self.critic.save(f'{path}/critic.h5')
 
     def load(self):
         pass
@@ -124,6 +124,7 @@ if __name__ == '__main__':
     states = np.random.random((1, 2, 2))
 
     target = np.random.random((1, 1))
-    
-    print(x.act(states))
+    for i in range(100):
+        print(x.act(states)), input('KKKK')
+        states = np.random.random((1, 2, 2))
     

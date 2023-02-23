@@ -2,6 +2,7 @@ from model import MADDPGmodel
 import tensorflow as tf
 from keras.models import clone_model
 from keras.layers import Flatten
+import os
 class MADDPG:
 
     def __init__(self, n_agents, state_space, action_space, actor_learning_rate=1e-05, ctor_learning_rate=1e-04, critic_learning_rate=1e-04,
@@ -18,7 +19,8 @@ class MADDPG:
         self.t_model = clone_model(self.model.model)
         self.gamma = gamma
         self.tau = tau
-        self.path = path
+        self.path = os.path.join(path)
+        
 
        
 
@@ -26,17 +28,24 @@ class MADDPG:
 
         action = self.model.act(states)
 
-        noise = tf.random.uniform(action.shape, -1, 1, seed=7)
+       
+
+        
+        noise = tf.random.uniform(action.shape, -0, 1, seed=7)
 
         return action + noise
 
-    def learn(self, s, r, a, s_1):
+        
+    def learn(self, s, a, r, s_1):
         
         t_q_value = self.t_model(s_1)
         s_f = Flatten()(s)
         a_f = Flatten()(a)
         
-        target = tf.math.reduce_mean(r, axis=1) + self.gamma * t_q_value
+        
+        rwd = tf.cast(tf.math.reduce_mean(r, axis=1, keepdims=True), tf.float32)
+        t = self.gamma * t_q_value
+        target =  rwd + t
         self.model.trainCritic(s_f, a_f, target)
         self.model.trainActor(s)
 
@@ -49,7 +58,7 @@ class MADDPG:
             a.assign(b * self.tau + a * (1 - self.tau))
 
     def save(self):
-        pass
+        self.model.save(self.path)
 
     def load(self):
         pass
