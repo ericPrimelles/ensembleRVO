@@ -32,7 +32,7 @@ class MADDPGmodel:
             [
                 layers.Input(self.state_space),
                 *[layers.Dense(units, activation='relu') for units in self.actor_hidden_units],
-                layers.Dense(self.action_space, activation='linear')
+                layers.Dense(self.action_space, activation='relu')
             ]
         )
     def getEnsembleActor(self):
