@@ -103,7 +103,7 @@ class MADDPGmodel:
     @tf.function
     def act (self, state):
         
-        return self.actor(state)
+        return tf.linalg.normalize(self.actor(state), axis=1)[0]
 
     def save (self):
         pass
