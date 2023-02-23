@@ -104,6 +104,12 @@ class MADDPGmodel:
     def act (self, state):
         
         return self.actor(state)
+
+    def save (self):
+        pass
+
+    def load(self):
+        pass
 if __name__ == '__main__':
 
     import numpy as np
