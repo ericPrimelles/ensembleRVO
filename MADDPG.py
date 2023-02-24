@@ -10,7 +10,7 @@ class MADDPG:
     def __init__(self, n_agents, state_space, action_space, actor_learning_rate=1e-05, ctor_learning_rate=1e-04, critic_learning_rate=1e-04,
         actor_hidden_units : list = [128],
         critic_hidden_units : list = [128],
-        gamma=0.99, tau=0.95, path='') -> None:
+        gamma=0.99, tau=0.95, path='', lower_bound=0, upper_bound=1.0) -> None:
         
 
         self.n_agents =n_agents
@@ -24,17 +24,15 @@ class MADDPG:
         self.path = os.path.join(path)
         
         self.noise = OUActionNoise(np.ones(self.n_agents) * 0.5, np.ones(self.n_agents) * 0.2)
-       
+        self.lb = lower_bound
+        self.ub = upper_bound
 
     def policy(self, states):
 
         action = self.model.act(states)
-
-       
-
-        
         noise = self.noise()
-        return action + noise
+        actions = action + noise
+        return np.clip(actions, self.lb, self.ub)
 
         
     def learn(self, s, a, r, s_1):
