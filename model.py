@@ -1,6 +1,6 @@
 from keras import Model, layers
 from keras.optimizers import Adam
-from keras.models import Sequential
+from keras.models import Sequential, load_model
 import tensorflow as tf
 
 
@@ -113,8 +113,14 @@ class MADDPGmodel:
             actor.save(f'{path}/actor_{i}.h5')
         self.critic.save(f'{path}/critic.h5')
 
-    def load(self):
-        pass
+    def load(self, path):
+        for i, agnt in enumerate(self.actors_models):
+            agnt = load_model(f'{path}/actor_{i}.h5')
+        
+        self.critic = load_model(f'{path}/critic.h5')
+        self.getEnsembleActor()
+        self.getEnsembleModel()
+
 if __name__ == '__main__':
 
     import numpy as np

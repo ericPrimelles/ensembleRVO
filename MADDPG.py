@@ -2,6 +2,7 @@ from model import MADDPGmodel
 import tensorflow as tf
 from keras.models import clone_model
 from keras.layers import Flatten
+from noise import OUActionNoise
 import os
 class MADDPG:
 
@@ -21,7 +22,7 @@ class MADDPG:
         self.tau = tau
         self.path = os.path.join(path)
         
-
+        self.noise = OUActionNoise(np.zeros(self.n_agents), np.ones(self.n_agents) * 0.2)
        
 
     def policy(self, states):
@@ -31,8 +32,7 @@ class MADDPG:
        
 
         
-        noise = tf.random.uniform(action.shape, -0, 1, seed=7)
-
+        noise = self.noise()
         return action + noise
 
         
@@ -61,7 +61,7 @@ class MADDPG:
         self.model.save(self.path)
 
     def load(self):
-        pass
+        self.model.load(self.path)
 if __name__ == '__main__':
     import numpy as np
     m = MADDPG(2, 2, 2)
@@ -69,4 +69,5 @@ if __name__ == '__main__':
     r = np.random.random((1, 2))
     actions = np.random.random((1, 2, 2))
     state_1 = np.random.random((1, 2, 2))
-    m.updateTarget()
+    print(m.model.act(state))
+    print(m.model.actors_models[0](state[0,0,:]))

@@ -3,7 +3,7 @@ from replay_buffer import ReplayBuffer
 from pettingzoo.mpe import simple_v2
 import tensorflow as tf
 import warnings
-
+from time import sleep
 warnings.filterwarnings('ignore')
 gamma = 0.99
 tau = 0.95
@@ -13,11 +13,11 @@ critic_hidden_units = [64, 32, 16]
 
 
 if __name__ == '__main__':
-    env = simple_v2.env(max_cycles=50, continuous_actions=True)
+    env = simple_v2.env(max_cycles=100, continuous_actions=True, render_mode='human')
     m = MADDPG(1, 4, 5, gamma=gamma, tau=tau, actor_hidden_units=actor_hidden_units, critic_hidden_units=critic_hidden_units, path='models/')
     rb = ReplayBuffer(4, 5, 1)
 
-    for i in range(1000):
+    '''for i in range(1000):
         env.reset()
         s = env.observe('agent_0')
 
@@ -45,5 +45,18 @@ if __name__ == '__main__':
             if truncation or d:
                 #env.reset()
                 print(f'Epoch {i} ended')
-                break  
+                break  '''
+    m.load()
+    env.reset()
+    obs, r, truncation, done, info = env.last()
+    while not done and not truncation:
+        env.render()
+        sleep(0.3)
+        s_e = tf.expand_dims(obs, 0)
+        s_e = tf.expand_dims(s_e, 0)        
+        a = m.model.act(s_e)
+        print(tf.squeeze(a))
+        env.step(tf.squeeze(a))
+        obs, r, truncation, done, info = env.last()
                 
+    env.close()
