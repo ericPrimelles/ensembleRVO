@@ -13,11 +13,11 @@ critic_hidden_units = [64, 32, 16]
 
 
 if __name__ == '__main__':
-    env = simple_v2.env(max_cycles=100, continuous_actions=True, render_mode='human')
+    env = simple_v2.env(max_cycles=100, continuous_actions=True)
     m = MADDPG(1, 4, 5, gamma=gamma, tau=tau, actor_hidden_units=actor_hidden_units, critic_hidden_units=critic_hidden_units, path='models/')
     rb = ReplayBuffer(4, 5, 1)
 
-    '''for i in range(1000):
+    for i in range(1000):
         env.reset()
         s = env.observe('agent_0')
 
@@ -45,7 +45,10 @@ if __name__ == '__main__':
             if truncation or d:
                 #env.reset()
                 print(f'Epoch {i} ended')
-                break  '''
+                break  
+    env.close()
+    env = simple_v2.env(max_cycles=100, continuous_actions=True, render_mode='human')
+    
     m.load()
     env.reset()
     obs, r, truncation, done, info = env.last()

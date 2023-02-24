@@ -1,8 +1,9 @@
 from model import MADDPGmodel
-import tensorflow as tf
 from keras.models import clone_model
 from keras.layers import Flatten
 from noise import OUActionNoise
+import tensorflow as tf
+import numpy as np
 import os
 class MADDPG:
 
@@ -22,7 +23,7 @@ class MADDPG:
         self.tau = tau
         self.path = os.path.join(path)
         
-        self.noise = OUActionNoise(np.zeros(self.n_agents), np.ones(self.n_agents) * 0.2)
+        self.noise = OUActionNoise(np.ones(self.n_agents) * 0.5, np.ones(self.n_agents) * 0.2)
        
 
     def policy(self, states):
